@@ -12,7 +12,9 @@
     .active { color: #00ff00; }
     .inactive { color: #ff0000; }
     #loading { color: #666; }
-    #note { font-size: 16px; color: #666; margin-top: 10px; font-style: italic; }
+    #note { font-size: 10px; color: #666; margin-top: 10px; font-style: italic; }
+    #supportBtn { width: 100%; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 15px; }
+    #supportBtn:hover { background: #0056b3; }
   </style>
 </head>
 <body>
@@ -31,6 +33,7 @@
   </div>
   <div id="note">Note: Video must be playing before enabling. Refresh applies the speed.</div>
   <div id="status" class="loading">Loading...</div>
+  <button id="supportBtn">Support Me (Buy Me a Coffee)</button>
   <script src="popup.js"></script>
 </body>
 </html>

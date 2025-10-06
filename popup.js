@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const enabledCheckbox = document.getElementById('enabledCheckbox');
   const speedRadios = document.querySelectorAll('input[name="speed"]');
   const statusDiv = document.getElementById('status');
+  const supportBtn = document.getElementById('supportBtn');
 
   // Load stored state (default: enabled=false, speed=3)
   function loadState() {
@@ -96,6 +97,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Support button handler
+  supportBtn.addEventListener('click', () => {
+    chrome.tabs.create({ url: 'https://buymeacoffee.com/ivideogameboss' });
+  });
 
   loadState();
 });
