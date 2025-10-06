@@ -2,6 +2,11 @@
 
 ![Netflix Speed Control Icon](NetflixSpeedContol.png)
 
+## Support
+If you find this extension useful, consider buying me a coffee!
+
+[![Buy Me A Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&button_colour=BD5FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00)](https://buymeacoffee.com/ivideogameboss)
+
 A simple Firefox WebExtension that allows you to control Netflix video playback speed with options for 1x (normal), 1.5x, 2x, 2.5x, 3x, 3.5x, and 4x. It includes a popup UI for toggling the feature and selecting speeds. The extension is designed for personal use and applies speed changes dynamically without needing to reload the page (except on initial enable, where a refresh is triggered).
 
 **Note**: This extension is unofficial and for educational/personal purposes only. Respect Netflix's Terms of Service—use at your own risk. Netflix's player may change, breaking the extension.
