@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 240px; padding: 15px; font-family: Arial, sans-serif; text-align: left; }
+    h3 { margin: 0 0 10px 0; text-align: center; }
+    label { display: block; margin: 8px 0; cursor: pointer; }
+    input[type="checkbox"] { margin-right: 5px; }
+    input[type="radio"] { margin-right: 8px; }
+    #status { text-align: center; margin: 10px 0; font-size: 12px; }
+    .active { color: #00ff00; }
+    .inactive { color: #ff0000; }
+    #loading { color: #666; }
+    #note { font-size: 16px; color: #666; margin-top: 10px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h3>Netflix Speed Control</h3>
+  <label>
+    <input type="checkbox" id="enabledCheckbox"> Enable Speed Control
+  </label>
+  <div style="margin-left: 15px;">
+    <label><input type="radio" name="speed" value="1" id="speed1"> 1x (Normal)</label>
+    <label><input type="radio" name="speed" value="1.5" id="speed15"> 1.5x</label>
+    <label><input type="radio" name="speed" value="2" id="speed2"> 2x</label>
+    <label><input type="radio" name="speed" value="2.5" id="speed25"> 2.5x</label>
+    <label><input type="radio" name="speed" value="3" id="speed3" checked> 3x</label>
+    <label><input type="radio" name="speed" value="3.5" id="speed35"> 3.5x</label>
+    <label><input type="radio" name="speed" value="4" id="speed4"> 4x</label>
+  </div>
+  <div id="note">Note: Video must be playing before enabling. Refresh applies the speed.</div>
+  <div id="status" class="loading">Loading...</div>
+  <script src="popup.js"></script>
+</body>
+</html>

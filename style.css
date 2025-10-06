@@ -1,0 +1,63 @@
+/* Style for the custom expand button */
+#in-browser-fullscreen-button {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#in-browser-fullscreen-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* 
+  When active, this class expands the player and hides scrollbars.
+*/
+html.in-browser-fullscreen-mode,
+html.in-browser-fullscreen-mode body {
+  overflow: hidden !important;
+}
+
+/* 
+  Makes the main player container fill the entire browser window.
+*/
+html.in-browser-fullscreen-mode #movie_player {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  background-color: #000;
+}
+
+/* 
+  *** UPDATED RULE ***
+  This targets both the video container and the video element itself.
+  It forces them to fill the new space and resets any positioning
+  styles that YouTube might apply, which were causing the black screen.
+*/
+html.in-browser-fullscreen-mode .html5-video-container,
+html.in-browser-fullscreen-mode .html5-main-video {
+    width: 100% !important;
+    height: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+}
+
+/* 
+  *** UPDATED RULE ***
+  This rule now *only* applies the object-fit property to ensure the video
+  zooms to fill the screen without black bars.
+*/
+html.in-browser-fullscreen-mode .html5-main-video {
+  object-fit: cover !important;
+}
