@@ -1,4 +1,4 @@
-# Netflix Speed Control Firefox Extension
+# Netflix & YouTube Speed Control Firefox Extension
 
 ![Netflix Speed Control Icon](NetflixSpeedContol.png)
 
@@ -50,7 +50,7 @@ This is a temporary (unsigned) extension for Firefox. You load it manually—no 
 The extension stays loaded until you close Firefox or remove it. For permanent use, zip the folder and submit to Firefox Add-ons (AMO) for signing (optional).
 
 ## How to Use
-1. **Open Netflix**: Go to a Netflix watch page (e.g., https://www.netflix.com/watch/VIDEO_ID) and start playing a video. **Important**: The video must already be playing before enabling the extension (Netflix's player loads the `<video>` element on play).
+1. **Open Netflix or YouTube**: Start playing a video. **Important**: The video must already be playing before enabling the extension (Netflix's player loads the `<video>` element on play).
 
 2. **Open the Popup**:
    - Click the extension icon in your Firefox toolbar.
@@ -81,11 +81,11 @@ The extension stays loaded until you close Firefox or remove it. For permanent u
    - **Netflix Changes**: If Netflix updates their player (e.g., hides `<video>` deeper), the extension might break—fork and fix!
 
 ## Caveats
-- Works only on Netflix watch pages (`/watch/*`).
-- Netflix might reset speeds on skips/seeks—extension re-applies on play events.
+- Works only on Netflix & YouTube watch pages (`/watch/*`).
+- Netflix or YouTube might reset speeds on skips/seeks—extension re-applies on play events.
 - For personal use only; not affiliated with Netflix.
 - Tested on Firefox 143+—may not work on older versions or other browsers (Chrome MV3 compatible with tweaks).
-- No guarantees—Netflix could block speed changes in future updates.
+- No guarantees—Netflix or YouTube could block speed changes in future updates.
 
 ## License
 This project is licensed under the MIT License—feel free to modify and share!
