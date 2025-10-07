@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     enabledCheckbox.checked = enabled;
     document.querySelector(`input[value="${speed}"]`).checked = true;
     speedRadios.forEach(radio => radio.disabled = !enabled);
-    statusDiv.textContent = enabled ? `${speed}x speed active` : 'Inactive';
+    statusDiv.textContent = enabled ? `${speed}x speed active on Netflix/YouTube` : 'Inactive';
     statusDiv.className = enabled ? 'active' : 'inactive';
     statusDiv.style.color = enabled ? '#00ff00' : '#ff0000';
   }
@@ -74,19 +74,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Refresh active Netflix tab
+  // Refresh active video tab (Netflix or YouTube)
   function refreshActiveTab() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0] && tabs[0].url.includes('netflix.com/watch')) {
+      if (tabs[0] && (tabs[0].url.includes('netflix.com/watch') || tabs[0].url.includes('youtube.com/watch'))) {
         chrome.tabs.reload(tabs[0].id);
       }
     });
   }
 
-  // Send message to active Netflix tab
+  // Send message to active video tab
   function sendToActiveTab(settings) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0] && tabs[0].url.includes('netflix.com/watch')) {
+      if (tabs[0] && (tabs[0].url.includes('netflix.com/watch') || tabs[0].url.includes('youtube.com/watch'))) {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'updateSpeed', ...settings }, (response) => {
           if (chrome.runtime.lastError) {
             console.error('Message error:', chrome.runtime.lastError);

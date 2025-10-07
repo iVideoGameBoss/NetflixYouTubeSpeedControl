@@ -1,8 +1,10 @@
-// Content script to apply selected Netflix playback speed
+// Content script to apply selected speed on Netflix/YouTube
 (function() {
   'use strict';
 
-  console.log('Netflix Speed Control: Content script loaded');
+  const isNetflix = window.location.hostname.includes('netflix.com');
+  const isYouTube = window.location.hostname.includes('youtube.com');
+  console.log(`Speed Control: Loaded on ${isNetflix ? 'Netflix' : 'YouTube'}`);
 
   // Function to find video (including shadow DOM)
   function findVideo() {
@@ -26,7 +28,7 @@
   function setPlaybackRate(video, speed) {
     if (!video || video.playbackRate === speed) return;
     video.playbackRate = speed;
-    console.log(`Netflix Speed Control: Set to ${speed}x (current time:`, video.currentTime, ')');
+    console.log(`Speed Control: Set to ${speed}x (current time: ${video.currentTime})`);
   }
 
   let currentSpeed = 3; // Default
@@ -34,7 +36,7 @@
   // Apply speed from storage or message
   function applySpeed(enabled, speed) {
     if (!enabled) {
-      console.log('Netflix Speed Control: Disabled via message/storage');
+      console.log('Speed Control: Disabled via message/storage');
       return;
     }
     currentSpeed = speed || 3;
@@ -42,20 +44,20 @@
     const video = findVideo();
     if (video) {
       setPlaybackRate(video, currentSpeed);
-      // Re-apply on events
+      // Re-apply on events (YouTube might change on quality/adjust)
       ['play', 'ratechange', 'loadedmetadata', 'ended'].forEach(event => {
         video.addEventListener(event, () => setPlaybackRate(video, currentSpeed), { once: false });
       });
-      console.log(`Netflix Speed Control: Listeners added for ${currentSpeed}x`);
+      console.log(`Speed Control: Listeners added for ${currentSpeed}x`);
     } else {
-      console.log('Netflix Speed Control: No video found yet');
+      console.log('Speed Control: No video found yet');
     }
   }
 
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateSpeed') {
-      console.log('Netflix Speed Control: Received update:', request);
+      console.log('Speed Control: Received update:', request);
       applySpeed(request.enabled, request.speed);
       sendResponse({ success: true, speed: currentSpeed });
     }
@@ -88,7 +90,7 @@
     });
     if (pollCount > 20) {
       clearInterval(pollInterval);
-      console.log('Netflix Speed Control: Polling stopped');
+      console.log('Speed Control: Polling stopped');
     }
   }, 500);
 
@@ -108,5 +110,5 @@
     clearInterval(pollInterval);
   });
 
-  console.log('Netflix Speed Control: Observer, polling, and messaging ready');
+  console.log('Speed Control: Observer, polling, and messaging ready');
 })();
