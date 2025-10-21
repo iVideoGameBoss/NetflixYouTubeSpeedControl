@@ -7,92 +7,85 @@ If you find this extension useful, consider buying me a coffee!
 
 [![Buy Me A Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&button_colour=BD5FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00)](https://buymeacoffee.com/ivideogameboss)
 
-A simple Firefox WebExtension that allows you to control Netflix video playback speed with options for 1x (normal), 1.5x, 2x, 2.5x, 3x, 3.5x, and 4x. It includes a popup UI for toggling the feature and selecting speeds. The extension is designed for personal use and applies speed changes dynamically without needing to reload the page (except on initial enable, where a refresh is triggered).
+A Firefox WebExtension that allows you to control video playback speed on both **Netflix** and **YouTube**. It provides a simple popup UI to enable the feature and select speeds from 1x (normal) up to 4x. The extension is designed to apply speed changes instantly and seamlessly, without needing to reload the page.
 
-**Note**: This extension is unofficial and for educational/personal purposes only. Respect Netflix's Terms of Service—use at your own risk. Netflix's player may change, breaking the extension.
+**Note**: This extension is unofficial and for educational/personal purposes only. Respect the Terms of Service of the websites you use it on. Player UIs can change, which may break the extension in the future.
 
 ## Features
+- **Multi-Site Support**: Works on both Netflix and YouTube video pages.
 - **Speed Options**: Choose from 1x, 1.5x, 2x, 2.5x, 3x, 3.5x, or 4x playback speeds.
-- **Enable/Disable Toggle**: Checkbox to turn the speed control on/off.
-- **Instant Changes**: Switch speeds mid-video without pausing or reloading (after initial enable).
-- **Persistent Settings**: Your preferences (enabled state and selected speed) are saved across sessions.
-- **Debug Logs**: Console logs for troubleshooting (visible in F12 DevTools on Netflix pages).
-- **Default**: Starts disabled (unchecked). Defaults to 3x when enabled.
+- **Instant Activation**: Enable the extension and change speeds without any page reloads.
+- **Works on Existing Tabs**: When the extension is installed or enabled, it automatically works on any Netflix or YouTube tabs that are already open.
+- **Persistent Settings**: Your preferences (enabled state and selected speed) are saved across browser sessions.
+- **Manual Refresh**: Includes a fallback "Refresh Tab" button in the popup for any rare cases where the speed doesn't apply correctly.
+- **Debug Logs**: Console logs for troubleshooting (visible in F12 DevTools on target pages).
 
 ## Installation
-This is a temporary (unsigned) extension for Firefox. You load it manually—no need for the Firefox Add-ons store.
+This is a temporary (unsigned) extension for Firefox. You can load it manually without using the Firefox Add-ons store.
 
 ### Prerequisites
-- Firefox browser (version 57+ for Manifest V3 support).
-- A 48x48 PNG icon file (create a simple one with "Speed" text if missing—extension works without it, but shows a default icon).
+- Firefox browser.
+- A 48x48 PNG icon file named `icon.png` (the extension will work without it but will show a default icon).
 
 ### Steps to Install
 1. **Download the Files**:
-   - Clone this repo or download the ZIP.
-   - Extract to a folder (e.g., `NetflixSpeedControl`).
+   - Clone this repository or download it as a ZIP file.
+   - Extract the files to a dedicated folder (e.g., `SpeedControlExtension`).
 
 2. **Files in the Repo**:
-   - `manifest.json`: Extension configuration.
-   - `popup.html`: UI for the popup.
-   - `popup.js`: Logic for the popup (handles toggling and speed selection).
-   - `content.js`: Script that runs on Netflix pages to apply speeds.
-   - `icon.png`: Toolbar icon (48x48 PNG—add your own if missing).
+   - `manifest.json`: The core configuration file for the extension.
+   - `popup.html`: The UI for the popup menu.
+   - `popup.js`: The logic that powers the popup UI.
+   - `content.js`: The script that runs on Netflix & YouTube pages to control the video speed.
+   - `background.js`: The script that enables the extension to work on already-open tabs upon installation.
+   - `style.css`: Contains styling for additional features.
+   - `icon.png`: The 48x48 icon displayed in the Firefox toolbar.
    - `README.md`: This file.
 
 3. **Load in Firefox**:
-   - Open Firefox and go to `about:debugging#/runtime/this-firefox`.
-   - Click "Load Temporary Add-on...".
-   - Navigate to your folder and select `manifest.json`.
-   - The extension should load—look for the icon in your toolbar (if `icon.png` is present).
+   - Open a new tab in Firefox and navigate to `about:debugging#/runtime/this-firefox`.
+   - Click the "Load Temporary Add-on..." button.
+   - Navigate to the folder where you extracted the files and select the `manifest.json` file.
+   - The extension's icon should appear in your toolbar.
 
-4. **Reload on Changes**: If you edit files, go back to `about:debugging`, click "Remove" then re-load, or click "Reload" on the extension.
+4. **Reload on Changes**: If you edit any of the extension's files, you can simply click the "Reload" button next to the extension's entry on the `about:debugging` page.
 
-The extension stays loaded until you close Firefox or remove it. For permanent use, zip the folder and submit to Firefox Add-ons (AMO) for signing (optional).
+The extension will remain loaded until you close Firefox or manually remove it.
 
 ## How to Use
-1. **Open Netflix or YouTube**: Start playing a video. **Important**: The video must already be playing before enabling the extension (Netflix's player loads the `<video>` element on play).
-
-2. **Open the Popup**:
-   - Click the extension icon in your Firefox toolbar.
-   - The popup shows:
-     - A checkbox: "Enable Speed Control" (unchecked by default).
-     - Radio buttons for speeds: 1x (Normal), 1.5x, 2x, 2.5x, 3x, 3.5x, 4x (defaults to 3x).
-     - A note: "Note: Video must be playing before enabling. Refresh applies the speed."
-     - Status message (e.g., "Inactive" or "3x speed active").
-
-3. **Enable and Apply Speed**:
-   - Select your desired speed (e.g., 3x).
+1. **Install the Extension**: Follow the installation steps above.
+2. **Open Netflix or YouTube**: Navigate to a video on either site. The extension works on pages that were open *before* you installed it.
+3. **Open the Popup**:
+   - Click the extension's icon in your Firefox toolbar.
+   - The popup will show:
+     - A checkbox: "Enable Speed Control".
+     - Radio buttons for the different speed options.
+     - A "Refresh Tab to Apply" button as a manual override.
+     - A status message (e.g., "Inactive" or "3x speed active").
+4. **Enable and Apply Speed**:
    - Check the "Enable Speed Control" box.
-   - The page will automatically refresh (only on enable) to inject the script.
-   - After refresh, resume playing the video—the selected speed applies.
-   - **Why Refresh?**: This ensures the content script hooks into Netflix's dynamic player. It only happens once per enable.
+   - Select your desired speed (e.g., 3x).
+   - The video's speed will change **instantly**. No page reload is required.
+5. **Change Speed Mid-Video**:
+   - While the extension is enabled, you can open the popup at any time and select a new speed. The change will apply immediately.
+6. **Disable**:
+   - Uncheck the "Enable Speed Control" box. The video's speed will instantly reset to normal (1x).
 
-4. **Change Speed Mid-Video**:
-   - While enabled and video is playing, open the popup and select a new speed (e.g., 2.5x).
-   - The change applies instantly—no refresh or pause needed.
-
-5. **Disable**:
-   - Uncheck the box: Resets to normal (1x) speed instantly, without refresh.
-
-6. **Troubleshooting**:
-   - **No Effect?**: Ensure the video is playing before enabling. Check Firefox Console (F12 on Netflix page) for logs like "Set to 3x". If no logs, reload the extension.
-   - **Icon Missing?**: Add a valid `icon.png` (48x48 PNG) and reload the extension.
-   - **Errors?**: In popup Console (right-click popup > Inspect > Console), look for issues. Clear storage via `about:debugging` > Inspect Extension > Storage tab.
-   - **Netflix Changes**: If Netflix updates their player (e.g., hides `<video>` deeper), the extension might break—fork and fix!
+## Troubleshooting
+- **Speed Not Changing?**: If the speed control doesn't seem to have an effect (a rare case on a complex, already-loaded page), click the **"Refresh Tab to Apply"** button in the popup. This will reload the page and guarantee a clean start for the extension.
+- **Icon Missing?**: Ensure you have a valid 48x48 PNG file named `icon.png` in the extension's folder and reload the extension.
+- **Errors?**: You can inspect the extension's background console via the "Inspect" button on the `about:debugging` page. For page-specific errors, open the regular browser console (F12) on the Netflix/YouTube tab.
 
 ## Caveats
-- Works only on Netflix & YouTube watch pages (`/watch/*`).
-- Netflix or YouTube might reset speeds on skips/seeks—extension re-applies on play events.
-- For personal use only; not affiliated with Netflix.
-- Tested on Firefox 143+—may not work on older versions or other browsers (Chrome MV3 compatible with tweaks).
-- No guarantees—Netflix or YouTube could block speed changes in future updates.
+- The extension is designed to be robust, but future updates to the Netflix or YouTube video players could potentially break its functionality.
+- For personal use only; not affiliated with Netflix or YouTube.
 
 ## License
 This project is licensed under the MIT License—feel free to modify and share!
 
 MIT License
 
-Copyright (c) 2025 [Your Name or GitHub Username]
+Copyright (c) 2025 iVideoGameBoss
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -100,6 +93,10 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+## Contributing
+Fork the repo, make your changes, and submit a pull request! Issues are welcome for bug reports or feature requests (e.g., more speed options, keyboard shortcuts).
+
+Enjoy faster binge-watching! 🚀
 ## Contributing
 Fork the repo, make changes, and PR! Issues welcome for bugs or feature requests (e.g., more speeds, keyboard shortcuts).
 
