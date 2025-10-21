@@ -3,13 +3,24 @@
   "name": "Netflix & YouTube Speed Control",
   "version": "1.8",
   "description": "Control playback speed on Netflix and YouTube videos.",
-  "permissions": ["storage", "tabs"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.netflix.com/*",
+    "https://www.youtube.com/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "Speed Control",
     "default_icon": {
       "48": "icon.png"
     }
+  },
+  "background": {
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {

@@ -2,113 +2,126 @@
 (function() {
   'use strict';
 
-  const isNetflix = window.location.hostname.includes('netflix.com');
-  const isYouTube = window.location.hostname.includes('youtube.com');
-  console.log(`Speed Control: Loaded on ${isNetflix ? 'Netflix' : 'YouTube'}`);
+  console.log("Speed Control: Content script loaded. Awaiting instructions.");
 
-  // Function to find video (including shadow DOM)
+  let currentSpeed = 1; // Default to normal speed
+  let speedControlActive = false; // Master control flag, starts as inactive
+  let videoElement = null; // Store a reference to the video element to avoid re-searching
+
+  // Function to find the video element, including within a shadow DOM
   function findVideo() {
+    if (videoElement && document.contains(videoElement)) {
+        return videoElement;
+    }
     function pierceShadow(root) {
       const video = root.querySelector('video');
       if (video) return video;
-      const shadows = root.querySelectorAll('*');
-      for (let el of shadows) {
-        const shadow = el.shadowRoot;
-        if (shadow) {
-          const found = pierceShadow(shadow);
+      for (let el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) {
+          const found = pierceShadow(el.shadowRoot);
           if (found) return found;
         }
       }
       return null;
     }
-    return pierceShadow(document);
+    videoElement = pierceShadow(document);
+    return videoElement;
   }
 
-  // Function to set playback rate
-  function setPlaybackRate(video, speed) {
-    if (!video || video.playbackRate === speed) return;
-    video.playbackRate = speed;
-    console.log(`Speed Control: Set to ${speed}x (current time: ${video.currentTime})`);
-  }
-
-  let currentSpeed = 3; // Default
-
-  // Apply speed from storage or message
-  function applySpeed(enabled, speed) {
-    if (!enabled) {
-      console.log('Speed Control: Disabled via message/storage');
-      return;
-    }
-    currentSpeed = speed || 3;
-
+  // Function to set the video's playback rate
+  function setPlaybackRate(speed) {
     const video = findVideo();
-    if (video) {
-      setPlaybackRate(video, currentSpeed);
-      // Re-apply on events (YouTube might change on quality/adjust)
-      ['play', 'ratechange', 'loadedmetadata', 'ended'].forEach(event => {
-        video.addEventListener(event, () => setPlaybackRate(video, currentSpeed), { once: false });
-      });
-      console.log(`Speed Control: Listeners added for ${currentSpeed}x`);
-    } else {
-      console.log('Speed Control: No video found yet');
+    if (!video) return;
+    if (video.playbackRate !== speed) {
+        video.playbackRate = speed;
+        console.log(`Speed Control: Playback rate set to ${speed}x`);
     }
   }
 
-  // Listen for messages from popup
+  // Add listeners to the video to re-apply speed if the website tries to reset it
+  function addVideoListeners() {
+    const video = findVideo();
+    if (!video) return;
+    ['play', 'ratechange', 'loadedmetadata'].forEach(event => {
+        video.addEventListener(event, applyCurrentSpeedSetting);
+    });
+    console.log(`Speed Control: Event listeners attached to video element.`);
+  }
+
+  // This function checks the active state and applies the correct speed
+  function applyCurrentSpeedSetting() {
+      if (speedControlActive) {
+          setPlaybackRate(currentSpeed);
+      } else {
+          setPlaybackRate(1); // If inactive, ensure speed is reset to normal 1x
+      }
+  }
+
+  // Central function to handle any updates from the popup or initial storage check
+  function handleUpdate({ enabled, speed }) {
+      speedControlActive = enabled;
+      if (enabled) {
+          currentSpeed = speed || 1;
+          console.log(`Speed Control: Extension has been ENABLED. Speed: ${currentSpeed}x.`);
+      } else {
+          currentSpeed = 1;
+          console.log("Speed Control: Extension has been DISABLED. Resetting speed to 1x.");
+      }
+      applyCurrentSpeedSetting();
+      addVideoListeners();
+  }
+
+  // 1. Listen for real-time messages from the popup UI
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateSpeed') {
-      console.log('Speed Control: Received update:', request);
-      applySpeed(request.enabled, request.speed);
+      console.log('Speed Control: Received live update from popup:', request);
+      handleUpdate({ enabled: request.enabled, speed: request.speed });
       sendResponse({ success: true, speed: currentSpeed });
     }
+    return true;
   });
 
-  // Check storage and apply on load
+  // 2. Check storage on initial page load
   chrome.storage.local.get(['enabled', 'speed'], (result) => {
     if (chrome.runtime.lastError) {
       console.error('Storage error:', chrome.runtime.lastError);
-      // Fallback
-      applySpeed(true, 3);
       return;
     }
-    const enabled = result.enabled !== false;
-    const speed = result.speed || 3;
-    applySpeed(enabled, speed);
+    if (result.enabled === true) {
+      console.log("Speed Control: Initial state from storage is ENABLED.");
+      handleUpdate({ enabled: true, speed: result.speed });
+    } else {
+      console.log("Speed Control: Initial state from storage is INACTIVE.");
+    }
   });
 
-  // Initial apply (in case storage is async)
-  applySpeed(true, 3);
-
-  // Poll every 500ms for up to 10s
-  let pollCount = 0;
-  const pollInterval = setInterval(() => {
-    pollCount++;
-    chrome.storage.local.get(['enabled', 'speed'], (result) => {
-      const enabled = result.enabled !== false;
-      const speed = result.speed || 3;
-      applySpeed(enabled, speed);
-    });
-    if (pollCount > 20) {
-      clearInterval(pollInterval);
-      console.log('Speed Control: Polling stopped');
-    }
-  }, 500);
-
-  // MutationObserver for dynamic changes
+  // 3. MutationObserver for dynamically loaded videos (e.g., YouTube navigation)
   const observer = new MutationObserver(() => {
-    chrome.storage.local.get(['enabled', 'speed'], (result) => {
-      const enabled = result.enabled !== false;
-      const speed = result.speed || 3;
-      applySpeed(enabled, speed);
-    });
+      const video = findVideo();
+      if (video) {
+        console.log("Speed Control: Video element detected by MutationObserver.");
+        applyCurrentSpeedSetting();
+        addVideoListeners();
+      }
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // Cleanup
-  window.addEventListener('beforeunload', () => {
-    observer.disconnect();
-    clearInterval(pollInterval);
-  });
+  // 4. *** NEW *** Polling mechanism to find pre-existing videos on injection.
+  // This is the safety net for tabs that were already open.
+  let pollAttempts = 0;
+  const pollInterval = setInterval(() => {
+    pollAttempts++;
+    const video = findVideo();
 
-  console.log('Speed Control: Observer, polling, and messaging ready');
+    if (video) {
+      console.log('Speed Control: Video found via polling. Applying settings.');
+      applyCurrentSpeedSetting();
+      addVideoListeners();
+      clearInterval(pollInterval); // Success! Stop polling.
+    } else if (pollAttempts > 20) { // Give up after 10 seconds (20 * 500ms)
+      console.log('Speed Control: Polling timed out. No video found.');
+      clearInterval(pollInterval); // Failure. Stop polling.
+    }
+  }, 500);
+
 })();
