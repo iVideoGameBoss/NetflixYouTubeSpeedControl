@@ -13,11 +13,9 @@
     .inactive { color: #ff0000; }
     #loading { color: #666; }
     #note { font-size: 10px; color: #666; margin-top: 10px; font-style: italic; }
-    #supportBtn, #reapplyBtn { width: 100%; padding: 8px; border-radius: 4px; cursor: pointer; border: none; }
+    #supportBtn { width: 100%; padding: 8px; border-radius: 4px; cursor: pointer; border: none; }
     #supportBtn { background: #007bff; color: white; font-size: 12px; margin-top: 15px; }
     #supportBtn:hover { background: #0056b3; }
-    #reapplyBtn { background: #6c757d; color: white; font-size: 11px; margin-top: 10px; }
-    #reapplyBtn:hover { background: #5a6268; }
   </style>
 </head>
 <body>
@@ -34,9 +32,7 @@
     <label><input type="radio" name="speed" value="3.5" id="speed35"> 3.5x</label>
     <label><input type="radio" name="speed" value="4" id="speed4"> 4x</label>
   </div>
-  <div id="note">Note: If speed isn't working, use the button below.</div>
-  
-  <button id="reapplyBtn">Re-apply Speed to Video</button>
+  <div id="note">Note: Speed changes apply instantly once enabled.</div>
 
   <div id="status" class="loading">Loading...</div>
   <button id="supportBtn">Support Me (Buy Me a Coffee)</button>
