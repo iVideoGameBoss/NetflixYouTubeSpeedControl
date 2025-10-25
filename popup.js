@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const speedRadios = document.querySelectorAll('input[name="speed"]');
   const statusDiv = document.getElementById('status');
   const supportBtn = document.getElementById('supportBtn');
-  const reapplyBtn = document.getElementById('reapplyBtn'); // Get the new button by its new ID
+  const refreshBtn = document.getElementById('refreshBtn'); // Get the new button
 
   // Load the stored state from storage when the popup opens
   function loadState() {
@@ -50,31 +50,23 @@ document.addEventListener('DOMContentLoaded', () => {
           if (chrome.runtime.lastError) {
             console.warn('Message error:', chrome.runtime.lastError.message);
           } else {
-            console.log('Content script acknowledged update:', response);
+            console.log('Content script acknowledged speed update:', response);
           }
         });
       }
     });
   }
   
-  // --- *** NEW: RE-APPLY BUTTON LOGIC *** ---
-  // When the re-apply button is clicked, toggle the extension off and on again.
-  reapplyBtn.addEventListener('click', () => {
-    // Only proceed if the extension is meant to be active.
-    if (!enabledCheckbox.checked) {
-      console.log("Cannot re-apply speed while the extension is disabled.");
-      return;
-    }
-
-    const currentSpeed = parseFloat(document.querySelector('input[name="speed"]:checked').value);
-
-    // 1. Send a 'disable' message to reset the speed to normal.
-    sendToActiveTab({ enabled: false, speed: 1 });
-
-    // 2. Use a short delay, then send the 'enable' message with the correct speed.
-    setTimeout(() => {
-      sendToActiveTab({ enabled: true, speed: currentSpeed });
-    }, 100); // A 100ms delay is enough for the script to process the change.
+  // --- *** NEW: REFRESH BUTTON LOGIC *** ---
+  // When the refresh button is clicked
+  refreshBtn.addEventListener('click', () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      // Check if we are on a valid tab
+      if (tabs[0] && tabs[0].id && (tabs[0].url.includes('netflix.com/watch') || tabs[0].url.includes('youtube.com/watch'))) {
+        // Reload the tab
+        chrome.tabs.reload(tabs[0].id);
+      }
+    });
   });
 
   // --- Event Listeners ---
