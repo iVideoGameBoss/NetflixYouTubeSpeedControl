@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const speedRadios = document.querySelectorAll('input[name="speed"]');
   const statusDiv = document.getElementById('status');
   const supportBtn = document.getElementById('supportBtn');
+  const reapplyBtn = document.getElementById('reapplyBtn'); // Get the new button by its new ID
 
   // Load the stored state from storage when the popup opens
   function loadState() {
@@ -25,15 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     statusDiv.className = enabled ? 'active' : 'inactive';
   }
 
-  // --- *** UPDATED: CORE LOGIC TO SAVE AND NOTIFY *** ---
-  // This function is now called by all interactive elements.
-  function saveAndNotify(event) {
+  // Generic function to save the current state and notify the content script
+  function saveAndNotify() {
     const enabled = enabledCheckbox.checked;
     const speed = document.querySelector('input[name="speed"]:checked').value;
     const speedValue = parseFloat(speed);
-    
-    // Determine if the user changed a speed radio button while the extension was already enabled.
-    const isForcedSpeedChange = event.target.type === 'radio' && enabled;
 
     chrome.storage.local.set({ enabled, speed: speedValue }, () => {
       if (chrome.runtime.lastError) {
@@ -41,20 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       updateUI(enabled, speedValue);
-
-      if (isForcedSpeedChange) {
-        // A speed radio button was clicked, so force the change by toggling off and on.
-        console.log("Forcing speed re-application.");
-        // 1. Send 'disable' to reset the speed to 1x.
-        sendToActiveTab({ enabled: false, speed: 1 });
-        // 2. After a brief delay, send the new desired speed.
-        setTimeout(() => {
-          sendToActiveTab({ enabled: true, speed: speedValue });
-        }, 100);
-      } else {
-        // The main checkbox was toggled, so send a single command.
-        sendToActiveTab({ enabled, speed: speedValue });
-      }
+      sendToActiveTab({ enabled, speed: speedValue });
     });
   }
 
@@ -72,6 +56,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  
+  // --- *** NEW: RE-APPLY BUTTON LOGIC *** ---
+  // When the re-apply button is clicked, toggle the extension off and on again.
+  reapplyBtn.addEventListener('click', () => {
+    // Only proceed if the extension is meant to be active.
+    if (!enabledCheckbox.checked) {
+      console.log("Cannot re-apply speed while the extension is disabled.");
+      return;
+    }
+
+    const currentSpeed = parseFloat(document.querySelector('input[name="speed"]:checked').value);
+
+    // 1. Send a 'disable' message to reset the speed to normal.
+    sendToActiveTab({ enabled: false, speed: 1 });
+
+    // 2. Use a short delay, then send the 'enable' message with the correct speed.
+    setTimeout(() => {
+      sendToActiveTab({ enabled: true, speed: currentSpeed });
+    }, 100); // A 100ms delay is enough for the script to process the change.
+  });
 
   // --- Event Listeners ---
   enabledCheckbox.addEventListener('change', saveAndNotify);
